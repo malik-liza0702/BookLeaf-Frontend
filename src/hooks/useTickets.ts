@@ -15,11 +15,6 @@ import { useAuth } from '@/auth/AuthContext';
 import { POLL_ADMIN_MS, POLL_AUTHOR_MS } from '@/lib/constants';
 import { queryKeys } from './queryKeys';
 
-// Polling uses TanStack Query's refetchInterval. refetchIntervalInBackground is
-// left at its default (false), so hidden tabs stop polling and catch up via
-// refetchOnWindowFocus when the author/admin comes back.
-
-/** Don't keep retrying (or polling) a ticket that doesn't exist or isn't ours. */
 export function retryUnlessClientError(failureCount: number, error: unknown) {
   if (isApiError(error) && error.status >= 400 && error.status < 500) return false;
   return failureCount < 2;
@@ -28,8 +23,6 @@ export function retryUnlessClientError(failureCount: number, error: unknown) {
 function stopPollingOnError(query: { state: { status: string } }, intervalMs: number) {
   return query.state.status === 'error' ? false : intervalMs;
 }
-
-// ---------------- Author ----------------
 
 export function useMyTickets() {
   return useQuery({
@@ -71,14 +64,11 @@ export function useSendAuthorReply(ticketId: string) {
   });
 }
 
-// ---------------- Admin ----------------
-
 export function useAdminTickets(filters: AdminTicketFilters) {
   return useQuery({
     queryKey: queryKeys.tickets.adminList(filters),
     queryFn: () => ticketsApi.listAll(filters),
     refetchInterval: POLL_ADMIN_MS,
-    // Keep the current page on screen while a new filter/page loads.
     placeholderData: keepPreviousData,
   });
 }
@@ -92,7 +82,6 @@ export function useAdminTicket(ticketId: string) {
   });
 }
 
-/** Invalidate everything a ticket write can affect: lists, the detail, stats. */
 function useInvalidateTicket() {
   const queryClient = useQueryClient();
   return (ticketId: string) =>
@@ -103,10 +92,6 @@ function useInvalidateTicket() {
     ]);
 }
 
-/**
- * PATCH with an optimistic update: saved values show immediately, roll back on
- * error, and the real ticket is refetched either way.
- */
 export function useUpdateTicket(ticketId: string) {
   const queryClient = useQueryClient();
   const invalidate = useInvalidateTicket();
@@ -121,7 +106,6 @@ export function useUpdateTicket(ticketId: string) {
       if (previous) {
         const next: AdminTicket = { ...previous };
         if (patch.status) next.status = patch.status;
-        // A value is an override; null means "reset to the AI suggestion".
         if (patch.category !== undefined) {
           next.category = patch.category ?? previous.aiCategory ?? previous.category;
           next.categoryOverridden = patch.category !== null;
@@ -166,19 +150,10 @@ export function useAddNote(ticketId: string) {
   });
 }
 
-/**
- * The AI draft is fetched with useQuery even though it is a POST: without
- * `regenerate` the endpoint is idempotent (it returns the cached draft), and a
- * query gives us loading/error state and caching per ticket for free.
- * `enabled` lets the page skip the call for resolved/closed tickets.
- * `initial` is the ticket's own `aiDraft`, when present.
- */
 export function useAiDraft(ticketId: string, enabled: boolean, initial?: AiDraft | null) {
   return useQuery({
     queryKey: queryKeys.tickets.aiDraft(ticketId),
     queryFn: () => ticketsApi.aiDraft(ticketId, false),
-    // A ticket that already carries a cached draft seeds the query, and with
-    // staleTime: Infinity that skips the POST entirely (saves cost and latency).
     initialData: initial ?? undefined,
     enabled,
     retry: false,

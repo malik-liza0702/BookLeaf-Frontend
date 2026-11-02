@@ -46,7 +46,6 @@ export function Layout() {
   const { pathname } = useLocation();
   useNotificationToasts(isAuthor);
 
-  // Close the mobile drawer after navigating.
   useEffect(() => setMenuOpen(false), [pathname]);
 
   useEffect(() => {
@@ -58,7 +57,6 @@ export function Layout() {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Mobile top bar */}
       <header className="sticky top-0 z-30 flex h-14 items-center gap-3 border-b border-slate-200 bg-white/95 px-4 backdrop-blur lg:hidden">
         <button
           type="button"

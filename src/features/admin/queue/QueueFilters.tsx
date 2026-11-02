@@ -22,7 +22,6 @@ const SORT_LABELS: Record<TicketSort, string> = {
   oldest: 'Oldest first',
 };
 
-// Same hues as StatusPill and PriorityBadge, so a pill reads like the rows below.
 const STATUS_DOTS: Record<TicketStatus, string> = {
   Open: 'bg-blue-500',
   'In Progress': 'bg-violet-500',
@@ -37,12 +36,10 @@ const PRIORITY_DOTS: Record<TicketPriority, string> = {
   Low: 'bg-slate-400',
 };
 
-// The important modifier beats the base control's border and background classes.
 const ACTIVE_CONTROL = '!border-brand-500 !bg-brand-50';
 
 interface QueueFiltersProps {
   state: QueueFilterState;
-  /** Tickets matching the current filters; undefined until they have loaded. */
   resultCount?: number;
   onChange: (patch: Partial<QueueFilterState>) => void;
   onReset: () => void;
@@ -65,7 +62,6 @@ interface PillGroupProps<T extends string> {
   onChange: (value: T | '') => void;
 }
 
-/** Every value is one click away; the API only takes one, so it picks a single option. */
 function PillGroup<T extends string>({ id, label, value, options, dots, onChange }: PillGroupProps<T>) {
   const pills: ReadonlyArray<T | ''> = ['', ...options];
   return (
@@ -85,7 +81,6 @@ function PillGroup<T extends string>({ id, label, value, options, dots, onChange
               className={cn(
                 'inline-flex h-8 items-center gap-1.5 whitespace-nowrap rounded-full border px-3 text-xs font-medium transition-colors',
                 'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600',
-                // "All" is the resting state, so only a real filter gets the brand colour.
                 !selected && 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50',
                 selected && (pill ? 'border-brand-500 bg-brand-50 text-brand-800' : 'border-slate-300 bg-slate-100 text-slate-800'),
               )}
@@ -117,7 +112,6 @@ function FilterChip({ label, onRemove }: { label: string; onRemove: () => void }
   );
 }
 
-/** Date inputs hold local "YYYY-MM-DD"; a bare date would parse as UTC and can show the day before. */
 function formatFilterDate(date: string): string {
   return formatDate(`${date}T00:00:00`);
 }
@@ -130,13 +124,9 @@ function createdLabel(from: string, to: string): string {
 export function QueueFilters({ state, resultCount, onChange, onReset }: QueueFiltersProps) {
   const admins = useAdminUsers();
 
-  // The search box is local state so typing stays snappy; the URL (and the
-  // API request) only updates once the admin pauses.
   const [search, setSearch] = useState(state.q);
   const lastPushed = useRef(state.q);
   useEffect(() => {
-    // Only sync from the URL on external changes (Clear, back button), never
-    // because of our own debounced push, so in-progress typing isn't lost.
     if (state.q !== lastPushed.current) {
       lastPushed.current = state.q;
       setSearch(state.q);

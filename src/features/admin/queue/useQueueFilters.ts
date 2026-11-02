@@ -13,12 +13,11 @@ import {
 import { ADMIN_PAGE_SIZE } from '@/lib/constants';
 import { endOfLocalDayISO, startOfLocalDayISO } from '@/lib/dates';
 
-/** Filter state as it lives in the URL (dates are YYYY-MM-DD). */
 export interface QueueFilterState {
   status: TicketStatus | '';
   category: TicketCategory | '';
   priority: TicketPriority | '';
-  assignedTo: string; // '' = all, 'me', 'unassigned', or a userId
+  assignedTo: string;
   from: string;
   to: string;
   q: string;
@@ -32,11 +31,6 @@ function oneOf<T extends string>(value: string | null, allowed: readonly T[]): T
   return value && (allowed as readonly string[]).includes(value) ? (value as T) : '';
 }
 
-/**
- * Queue filters are kept in the URL so a filtered view survives reloads, can
- * be shared with a colleague, and the back button restores it after opening a
- * ticket.
- */
 export function useQueueFilters() {
   const [params, setParams] = useSearchParams();
 
@@ -55,7 +49,6 @@ export function useQueueFilters() {
     };
   }, [params]);
 
-  /** Update one or more filters. Any change other than `page` resets to page 1. */
   const update = useCallback(
     (patch: Partial<QueueFilterState>) => {
       setParams(
@@ -79,7 +72,6 @@ export function useQueueFilters() {
 
   const activeCount = [state.status, state.category, state.priority, state.assignedTo, state.from, state.to, state.q].filter(Boolean).length;
 
-  /** The API query derived from URL state. */
   const apiFilters = useMemo<AdminTicketFilters>(
     () => ({
       status: state.status || undefined,

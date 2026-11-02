@@ -2,7 +2,6 @@ import { Paperclip } from 'lucide-react';
 import type { Attachment } from '@/api/types';
 import { formatFileSize } from '@/lib/format';
 
-/** Attachment metadata (name + size). Files themselves are not uploaded. */
 export function AttachmentList({ attachments }: { attachments: Attachment[] }) {
   if (attachments.length === 0) return null;
   return (

@@ -13,9 +13,7 @@ interface Tile {
   icon: ReactNode;
   tone: 'neutral' | 'red' | 'amber';
   title?: string;
-  /** Clicking the tile applies this filter to the queue. */
   filter: Partial<QueueFilterState>;
-  /** Clicking the tile again, while its filter is on, restores this. */
   clear: Partial<QueueFilterState>;
 }
 
@@ -46,7 +44,6 @@ export function StatsStrip({ state, onFilter }: StatsStripProps) {
       </div>
     );
   }
-  // Stats are a nice-to-have above the queue; fail quietly.
   if (isError) {
     return <p className="text-sm text-slate-500">Queue stats are unavailable right now.</p>;
   }

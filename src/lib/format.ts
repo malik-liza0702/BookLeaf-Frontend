@@ -26,7 +26,6 @@ function isFiniteNumber(value: unknown): value is number {
   return typeof value === 'number' && Number.isFinite(value);
 }
 
-/** ₹1,23,456 in Indian grouping. Null/NaN render as an em dash, never "NaN". */
 export function formatINR(value: number | null | undefined): string {
   return isFiniteNumber(value) ? inrFormatter.format(value) : EMPTY;
 }
@@ -51,14 +50,12 @@ export function formatDateTime(value: string | null | undefined): string {
   return date ? dateTimeFormatter.format(date) : EMPTY;
 }
 
-/** Hours elapsed since an ISO timestamp (0 if missing or in the future). */
 export function hoursSince(value: string | null | undefined, now = Date.now()): number {
   const date = parseDate(value);
   if (!date) return 0;
   return Math.max(0, (now - date.getTime()) / 3_600_000);
 }
 
-/** Compact age: "just now", "12m ago", "5h ago", "3d ago", "6w ago". */
 export function formatRelative(value: string | null | undefined, now = Date.now()): string {
   const date = parseDate(value);
   if (!date) return EMPTY;
@@ -74,7 +71,6 @@ export function formatRelative(value: string | null | undefined, now = Date.now(
   return formatDate(value);
 }
 
-/** Age without the "ago" suffix, e.g. "3d", for compact stats. */
 export function formatAge(value: string | null | undefined, now = Date.now()): string {
   const relative = formatRelative(value, now);
   return relative.endsWith(' ago') ? relative.slice(0, -4) : relative;
@@ -87,10 +83,6 @@ export function formatFileSize(bytes: number): string {
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
-/**
- * The contract types aiConfidence as a number without a scale; accept both
- * 0-1 and 0-100 and render a percentage.
- */
 export function formatConfidence(value: number | null | undefined): string | null {
   if (!isFiniteNumber(value)) return null;
   const pct = value <= 1 ? value * 100 : value;

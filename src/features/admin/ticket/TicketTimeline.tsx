@@ -10,7 +10,6 @@ type TimelineEntry =
   | { kind: 'response'; at: string; item: AdminResponse }
   | { kind: 'note'; at: string; item: InternalNote };
 
-/** Responses and internal notes merged in chronological order. */
 function buildEntries(ticket: AdminTicket): TimelineEntry[] {
   const entries: TimelineEntry[] = [
     ...ticket.responses.map((item) => ({ kind: 'response' as const, at: item.createdAt, item })),

@@ -9,7 +9,6 @@ import { useAddNote } from '@/hooks/useTickets';
 const MAX_NOTE_LENGTH = 2000;
 const FIELD_ID = 'internal-note';
 
-/** Add-note box, styled like the notes in the timeline so it reads as internal. */
 export function InternalNoteForm({ ticketId }: { ticketId: string }) {
   const toast = useToast();
   const addNote = useAddNote(ticketId);

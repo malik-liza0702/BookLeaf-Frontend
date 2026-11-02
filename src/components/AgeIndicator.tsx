@@ -3,10 +3,6 @@ import { AGE_DANGER_HOURS, AGE_WARNING_HOURS } from '@/lib/constants';
 import { cn } from '@/lib/cn';
 import { formatDateTime, formatRelative, hoursSince } from '@/lib/format';
 
-/**
- * How long a ticket has been waiting. Only unresolved tickets escalate in
- * colour: amber after 48h, red after 5 days.
- */
 export function AgeIndicator({ since, unresolved }: { since: string; unresolved: boolean }) {
   const hours = hoursSince(since);
   const level = !unresolved ? 'none' : hours >= AGE_DANGER_HOURS ? 'danger' : hours >= AGE_WARNING_HOURS ? 'warning' : 'none';

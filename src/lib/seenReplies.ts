@@ -1,5 +1,3 @@
-// The contract has no read receipts, so "New reply" is tracked per browser:
-// we remember how many support responses the author has seen on each ticket.
 const KEY = 'bookleaf.seenResponses';
 
 type SeenMap = Record<string, number>;
@@ -24,7 +22,6 @@ export function markResponsesSeen(ticketId: string, count: number) {
   try {
     localStorage.setItem(KEY, JSON.stringify(map));
   } catch {
-    // ignore: indicator just stays on
   }
 }
 

@@ -1,6 +1,5 @@
 import type { Book } from '@/api/types';
 
-/** "In Production - Cover Design" -> "Cover Design"; null when not in production. */
 export function productionStage(book: Pick<Book, 'status' | 'isInProduction'>): string | null {
   if (!book.isInProduction && !book.status.toLowerCase().startsWith('in production')) return null;
   const [, stage] = book.status.split(/\s+-\s+/, 2);

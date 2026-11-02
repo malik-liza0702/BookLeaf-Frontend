@@ -5,7 +5,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { AlertCircle, ArrowLeft } from 'lucide-react';
 import { errorMessage, isApiError } from '@/api/client';
-import { QUERY_TYPES } from '@/api/types';
 import { useBooks } from '@/hooks/useBooks';
 import { useCreateTicket } from '@/hooks/useTickets';
 import { PageHeader } from '@/components/PageHeader';
@@ -14,16 +13,13 @@ import { Card } from '@/components/ui/Card';
 import { CharCount, Field, Input, Select, Textarea } from '@/components/ui/Field';
 import { AttachmentPicker } from './AttachmentPicker';
 
-// Limits mirror the contract: subject 3-150, description 10-5000.
 const SUBJECT_MIN = 3;
 const SUBJECT_MAX = 150;
 const DESCRIPTION_MIN = 10;
 const DESCRIPTION_MAX = 5000;
 
 const ticketSchema = z.object({
-  /** Book.bookId, or '' for a general/account-level query. */
   bookId: z.string(),
-  queryType: z.enum(QUERY_TYPES, { message: 'Choose the type of query' }),
   subject: z
     .string()
     .trim()
@@ -37,10 +33,8 @@ const ticketSchema = z.object({
 });
 type TicketFormValues = z.infer<typeof ticketSchema>;
 
-/** Contract field names -> our form field names. */
 const SERVER_FIELD_MAP: Record<string, keyof TicketFormValues> = {
   bookId: 'bookId',
-  queryType: 'queryType',
   subject: 'subject',
   description: 'description',
 };
@@ -72,7 +66,7 @@ export function NewTicketPage() {
     try {
       const ticket = await createTicket.mutateAsync({
         bookId: values.bookId || null,
-        queryType: values.queryType,
+        queryType: 'General',
         subject: values.subject,
         description: values.description,
         attachments: files.map((f) => ({ name: f.name, size: f.size })),
@@ -115,7 +109,7 @@ export function NewTicketPage() {
           )}
 
           <Field
-            label="Book"
+            label="Type of query"
             htmlFor="bookId"
             error={errors.bookId?.message}
             hint={
@@ -135,23 +129,6 @@ export function NewTicketPage() {
               {books.data?.map((book) => (
                 <option key={book.id} value={book.bookId}>
                   {book.title} ({book.bookId})
-                </option>
-              ))}
-            </Select>
-          </Field>
-
-          <Field label="Type of query" htmlFor="queryType" error={errors.queryType?.message}>
-            <Select
-              id="queryType"
-              invalid={Boolean(errors.queryType)}
-              disabled={submitting}
-              aria-describedby={errors.queryType ? 'queryType-error' : undefined}
-              {...register('queryType')}
-            >
-              <option value="">Select a type…</option>
-              {QUERY_TYPES.map((type) => (
-                <option key={type} value={type}>
-                  {type}
                 </option>
               ))}
             </Select>

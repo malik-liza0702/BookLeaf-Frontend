@@ -339,7 +339,7 @@ Internal components: `BooksSkeleton` in `MyBooksPage`, and `Stat`, `Muted` and `
 
 **`NewTicketPage`** (`tickets/NewTicketPage.tsx`, no props) is the form for raising a query.
 
-- Fields: book (optional, defaults to "General / Account Level"), type of query, subject (3-150 characters), description (10-5000 characters) and attachments.
+- Fields: type of query (defaults to "General / Account Level", then the author's books), subject (3-150 characters), description (10-5000 characters) and attachments.
 - Uses react-hook-form with zod, with limits that match the API.
 - Server validation errors are mapped back onto the matching fields.
 - On success, it opens the new ticket with `{ justCreated: true }` in the navigation state.
@@ -557,8 +557,8 @@ These are places where the code is unfinished or may surprise you.
 | Gap | Detail |
 | --- | --- |
 | Demo logins ship to production | `DEMO_ACCOUNTS` in `LoginPage.tsx` is there so reviewers can switch roles, but it is hard-coded and always shown, and its passwords are in the bundle. Remove it, or hide it in production builds, before real use |
-| `BookCard`'s "Raise a query" doesn't preselect the book | The link opens `NewTicketPage` with the book dropdown on "General / Account Level", so the author has to choose the book again |
-| "Type of query" is redundant | The form requires `queryType` as well as the book, but classification and drafts don't use it. The brief asks for a single dropdown |
+| `BookCard`'s "Raise a query" doesn't preselect the book | The link opens `NewTicketPage` with the type of query dropdown on "General / Account Level", so the author has to choose the book again |
+| `queryType` is always `General` | The API still requires `queryType`, so the form sends `General` for every query. Classification and drafts don't use it; `bookId` is what links a query to a book |
 | Authors can't follow up before the first reply | `TicketReplyForm` appears only after a support reply, although the API allows a follow-up earlier |
 | Stat tiles and filtered rows can disagree | The Critical and Unassigned counts include only unresolved tickets, but their filters also match finished ones, so clicking a tile can show more rows than its number |
 | "Oldest open" doesn't filter | It only sorts by oldest, so the top rows can be finished tickets |

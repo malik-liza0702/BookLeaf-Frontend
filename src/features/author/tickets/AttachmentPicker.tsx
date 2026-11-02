@@ -10,10 +10,6 @@ interface AttachmentPickerProps {
   disabled?: boolean;
 }
 
-/**
- * UI-only attachments: files are picked and listed, but only their name and
- * size are sent to the API (the contract has no upload endpoint).
- */
 export function AttachmentPicker({ files, onChange, disabled }: AttachmentPickerProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const inputId = useId();
@@ -36,7 +32,6 @@ export function AttachmentPicker({ files, onChange, disabled }: AttachmentPicker
     }
     setRejections(problems);
     onChange(next);
-    // Reset so picking the same file again after removing it still fires onChange.
     if (inputRef.current) inputRef.current.value = '';
   };
 

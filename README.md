@@ -159,8 +159,7 @@ The contract offers polling rather than websockets, so we use TanStack Query's `
 
 ### Raising a query
 
-- *Book* lists the author's own books and defaults to *General / Account Level*. The chosen `bookId` gives the AI draft that book's real figures; if the books can't load, the query can still go in as general.
-- *Type of query* is a separate required dropdown with two options, *General* and *Account Level*, sent as `queryType`. Nothing in triage uses it (see limitations).
+- *Type of query* defaults to *General / Account Level*, followed by the author's own books. The chosen `bookId` gives the AI draft that book's real figures; if the books can't load, the query can still go in as general.
 - Subject (3–150) and description (10–5000) have live character counters and zod validation that mirrors the contract. When the server returns `VALIDATION_ERROR` details, they are mapped back onto the matching fields.
 - Attachments are UI only, because the contract has no upload endpoint. You can pick up to 5 files of 10 MB each, see their name and size, and remove them. Duplicates and oversized files are rejected with a message. Only `{ name, size }` metadata is sent.
 - On success you land on the new ticket with a confirmation card.
@@ -189,7 +188,7 @@ On startup a stored token is checked with `GET /auth/me`, and any failure ends t
 - **`updatedSince` is unused.** The admin API layer accepts it (`AdminTicketFilters.updatedSince`), but the queue still refetches the current page every 10s. Merging deltas into paginated, sorted pages is complex, and the payoff is small at about 20 rows per page.
 - **No websockets or SSE.** Updates take up to 5s for authors and 10s for admins to appear.
 - **Optimistic concurrency.** If two admins change the same field at the same time, the last write wins, and the other admin's view corrects itself on the next poll.
-- **Type of query is redundant.** The brief asks for one dropdown (book, or General / Account Level). The extra required field isn't used by classification or drafts, and the API requires it.
+- **`queryType` is always `General`.** The form has one dropdown (book, or General / Account Level), but the API still requires `queryType`, so the form sends `General` for every query. Classification and drafts don't use it.
 - **A backend error at startup signs you out.** Any failed `GET /auth/me` on load clears the token, not only a 401, so a free host's cold start can do this.
 - **"Raise a query" on a book card doesn't preselect the book.** The author chooses it again in the form.
 - **Logins don't carry over to new tabs.** Each tab has its own session (see above).

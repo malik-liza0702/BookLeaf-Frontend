@@ -21,7 +21,6 @@ const sizes: Record<Size, string> = {
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: Variant;
   size?: Size;
-  /** Shows a spinner and disables the button. */
   loading?: boolean;
 }
 

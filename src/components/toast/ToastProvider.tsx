@@ -34,7 +34,6 @@ export function ToastProvider({ children }: { children: ReactNode }) {
   const push = useCallback(
     (tone: ToastTone, message: string) => {
       const id = nextId.current++;
-      // Keep at most 4 on screen.
       setToasts((current) => [...current.slice(-3), { id, tone, message }]);
       window.setTimeout(() => dismiss(id), DISMISS_MS);
     },

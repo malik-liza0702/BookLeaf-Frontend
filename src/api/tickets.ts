@@ -16,12 +16,7 @@ import type {
 
 const path = (ticketId: string, suffix = '') => `/tickets/${encodeURIComponent(ticketId)}${suffix}`;
 
-/**
- * The same endpoints serve both roles; the backend shapes the payload by role.
- * We expose role-specific functions so each portal gets the right type.
- */
 export const ticketsApi = {
-  // ----- Author -----
   listMine: () =>
     apiRequest<ListResponse<AuthorTicket>>('/tickets', { query: { limit: 100 } }),
 
@@ -38,7 +33,6 @@ export const ticketsApi = {
       (res) => res.data,
     ),
 
-  // ----- Admin -----
   listAll: (filters: AdminTicketFilters) =>
     apiRequest<ListResponse<AdminTicket>>('/tickets', { query: { ...filters } }),
 

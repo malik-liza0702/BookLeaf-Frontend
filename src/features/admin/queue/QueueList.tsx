@@ -36,7 +36,6 @@ export function QueueRow({ ticket }: { ticket: AdminTicket }) {
     <li>
       <Link
         to={`/admin/tickets/${ticket.id}`}
-        // Remember the filtered queue URL so "Back to queue" restores it.
         state={{ from: location.pathname + location.search }}
         className={cn(
           'block space-y-2 border-l-4 px-4 py-3 hover:bg-slate-50 focus:bg-slate-50 focus:outline-none xl:space-y-0',

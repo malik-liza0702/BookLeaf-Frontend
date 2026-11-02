@@ -32,11 +32,6 @@ function TimingRow({ label, value }: { label: string; value: string | null }) {
   );
 }
 
-/**
- * Right-hand panel: status, assignee, triage overrides and timing. Edits stay
- * local until the admin saves them, and only fields that differ from the ticket
- * are sent. Polling keeps the other fields live while edits are pending.
- */
 export function ManagementPanel({ ticket }: { ticket: AdminTicket }) {
   const { user } = useAuth();
   const toast = useToast();
@@ -47,8 +42,6 @@ export function ManagementPanel({ ticket }: { ticket: AdminTicket }) {
 
   const edit = (fields: UpdateTicketRequest) => setDraft((current) => ({ ...current, ...fields }));
 
-  // What the panel shows: the admin's edit if there is one, otherwise the ticket.
-  // A null category/priority is a pending "reset to AI".
   const status = draft.status ?? ticket.status;
   const category = draft.category === undefined ? ticket.category : draft.category ?? ticket.aiCategory ?? ticket.category;
   const priority = draft.priority === undefined ? ticket.priority : draft.priority ?? ticket.aiPriority ?? ticket.priority;
@@ -62,8 +55,6 @@ export function ManagementPanel({ ticket }: { ticket: AdminTicket }) {
   };
   const hasChanges = Object.keys(changes).length > 0;
 
-  // Optimistic: saved values show immediately and roll back on failure, which
-  // leaves the draft in place so the admin can retry.
   const save = () =>
     update.mutate(changes, {
       onSuccess: () => {
@@ -74,7 +65,6 @@ export function ManagementPanel({ ticket }: { ticket: AdminTicket }) {
     });
 
   const assignedToMe = assigneeId === user?.id;
-  // Make sure the current assignee and the admin are selectable even if the roster hasn't loaded.
   const assigneeOptions = [...(admins.data ?? [])];
   for (const person of [ticket.assignedTo, user]) {
     if (person && !assigneeOptions.some((a) => a.id === person.id)) {

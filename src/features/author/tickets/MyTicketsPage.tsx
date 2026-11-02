@@ -22,7 +22,6 @@ const STATUS_FILTERS: readonly { value: StatusFilter; label: string }[] = [
   { value: 'resolved', label: 'Resolved' },
 ];
 
-/** "Open" covers Open and In Progress; "Resolved" covers Resolved and Closed. */
 function matchesFilter(ticket: AuthorTicket, filter: StatusFilter) {
   if (filter === 'all') return true;
   return isUnresolved(ticket.status) === (filter === 'open');
@@ -113,8 +112,6 @@ export function MyTicketsPage() {
   const { data, isPending, isError, error, refetch, isRefetching } = useMyTickets();
   const tickets = data?.data ?? [];
 
-  // The filter lives in the URL so the back button restores it after opening a
-  // query. The author endpoint has no status param, so we filter client-side.
   const [params, setParams] = useSearchParams();
   const statusParam = params.get('status');
   const filter: StatusFilter = statusParam === 'open' || statusParam === 'resolved' ? statusParam : 'all';

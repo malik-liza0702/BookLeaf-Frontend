@@ -14,7 +14,6 @@ interface FieldProps {
   htmlFor: string;
   error?: string;
   hint?: ReactNode;
-  /** Right-aligned extra in the label row, e.g. a character counter. */
   aside?: ReactNode;
   className?: string;
   children: ReactNode;
@@ -59,7 +58,6 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(function Select
   return <select ref={ref} aria-invalid={invalid || undefined} className={controlClass(invalid, cn('h-10 pr-8', className))} {...rest} />;
 });
 
-/** "123 / 5000" counter that turns red past the limit and amber near it. */
 export function CharCount({ value, max, min }: { value: number; max: number; min?: number }) {
   const over = value > max;
   const near = !over && value > max * 0.9;

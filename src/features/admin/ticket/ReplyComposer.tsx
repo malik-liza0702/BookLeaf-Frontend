@@ -16,7 +16,6 @@ import { MAX_REPLY_LENGTH, MAX_SUGGESTIONS_LENGTH, useReplyComposer, type DraftN
 const TEXTAREA_ID = 'admin-reply';
 const SUGGESTIONS_ID = 'admin-draft-suggestions';
 
-/** What the admin is about to send; null when no confirmation is open. */
 type PendingSend = { status?: TicketStatus } | null;
 
 function DraftNoticeBar({
@@ -88,7 +87,6 @@ function DraftNoticeBar({
   }
 }
 
-/** Automated checks from the backend (unverified ₹ amounts/dates, unfilled placeholders). */
 function DraftWarnings({ warnings }: { warnings: string[] }) {
   if (warnings.length === 0) return null;
   return (
@@ -111,7 +109,6 @@ function placeholderSummary(placeholders: string[]): string {
   return `${count} unfilled ${count === 1 ? 'placeholder' : 'placeholders'}: ${placeholders.join(', ')}`;
 }
 
-/** Lets the admin tell the AI what to change; the updated draft replaces the reply text. */
 function SuggestChangesPanel({
   composer,
   onSubmit,
@@ -185,7 +182,6 @@ export function ReplyComposer({ ticket }: { ticket: AdminTicket }) {
       await composer.reviseDraft();
       toast.success('Draft updated with your suggestions.');
     } catch {
-      // Shown inside the panel, which stays open with the suggestions so the admin can retry.
     }
   };
 
@@ -205,7 +201,6 @@ export function ReplyComposer({ ticket }: { ticket: AdminTicket }) {
     }
   };
 
-  // Ctrl/Cmd+Enter opens the send confirmation; Escape cancels it.
   const onKeyDown = (event: KeyboardEvent<HTMLTextAreaElement>) => {
     if (event.key === 'Enter' && (event.metaKey || event.ctrlKey)) {
       event.preventDefault();

@@ -8,7 +8,6 @@ interface PaginationProps {
   onPageChange: (page: number) => void;
 }
 
-/** "Showing 1–20 of 57" footer for a paginated list inside a Card. */
 export function Pagination({ page, limit, total, onPageChange }: PaginationProps) {
   const totalPages = Math.max(1, Math.ceil(total / limit));
   const firstItem = total === 0 ? 0 : (page - 1) * limit + 1;

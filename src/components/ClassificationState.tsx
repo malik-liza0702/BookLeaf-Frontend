@@ -2,7 +2,6 @@ import { Sparkles } from 'lucide-react';
 import type { AiStatus } from '@/api/types';
 import { Spinner } from './ui/Spinner';
 
-/** Inline "Classifying…" while AI triage is running. */
 export function ClassifyingLabel() {
   return (
     <span className="inline-flex items-center gap-1.5 text-xs font-medium text-violet-700" role="status">
@@ -12,7 +11,6 @@ export function ClassifyingLabel() {
   );
 }
 
-/** Small provenance hint under a category/priority value. */
 export function ClassificationHint({ aiStatus }: { aiStatus: AiStatus }) {
   if (aiStatus === 'failed') {
     return (

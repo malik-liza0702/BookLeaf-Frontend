@@ -7,14 +7,12 @@ import { isUnresolved } from '@/lib/tickets';
 export const MAX_REPLY_LENGTH = 5000;
 export const MAX_SUGGESTIONS_LENGTH = 1000;
 
-/** Drafts mark facts the model couldn't verify as `[confirm: …]` for the admin to fill in. */
 const PLACEHOLDER_PATTERN = /\[confirm:[^\]]*\]/gi;
 
 export function findPlaceholders(text: string): string[] {
   return text.match(PLACEHOLDER_PATTERN) ?? [];
 }
 
-/** Where the composer text came from. Drives the `usedAiDraft` flag. */
 type Origin = 'ai' | 'manual';
 
 interface ComposerState {
@@ -24,10 +22,6 @@ interface ComposerState {
 
 const EMPTY: ComposerState = { text: '', origin: 'manual' };
 
-/**
- * What the composer should tell the admin about the AI draft. Every state
- * except `loading` leaves the composer fully usable: AI never blocks a reply.
- */
 export type DraftNotice =
   | { kind: 'loading' }
   | { kind: 'revising' }
@@ -44,23 +38,9 @@ function noticeFromError(error: unknown): DraftNotice {
   return { kind: 'error', message: isApiError(error) ? error.message : 'Could not load the AI draft.' };
 }
 
-/**
- * State for the admin reply composer.
- *
- * Rules:
- * - The AI draft is requested automatically for unresolved tickets only;
- *   resolved/closed tickets get an explicit "Generate" button.
- * - A draft is inserted automatically only into an empty composer, so a draft
- *   that lands late (or a poll refetch) never overwrites what the admin typed.
- * - `usedAiDraft` stays true while the text started from the draft, even after
- *   edits; clearing the composer or discarding resets it.
- * - Suggesting changes revises the current text, including the admin's edits. If
- *   the revision fails, the text stays as it was.
- */
 export function useReplyComposer(ticket: AdminTicket) {
   const [requested, setRequested] = useState(false);
   const wantsDraft = isUnresolved(ticket.status) || requested;
-  // A draft already cached on the ticket seeds the query, so no POST is made.
   const draftQuery = useAiDraft(ticket.id, wantsDraft, ticket.aiDraft);
   const regenerate = useRegenerateAiDraft(ticket.id);
   const revise = useReviseAiDraft(ticket.id);
@@ -69,21 +49,17 @@ export function useReplyComposer(ticket: AdminTicket) {
   const [composer, setComposer] = useState<ComposerState>(EMPTY);
   const [isSuggesting, setIsSuggesting] = useState(false);
   const [suggestions, setSuggestions] = useState('');
-  // generatedAt of the last draft we auto-inserted, so each draft is offered once.
   const insertedFor = useRef<string | null>(null);
 
   const draft: AiDraft | null = draftQuery.data ?? null;
   const { refetch: refetchDraft } = draftQuery;
 
-  // On resolved/closed tickets a cached draft is offered ("Use AI draft"), not inserted.
   useEffect(() => {
     if (!draft || !wantsDraft || insertedFor.current === draft.generatedAt) return;
     insertedFor.current = draft.generatedAt;
     setComposer((current) => (current.text.trim() ? current : { text: draft.text, origin: 'ai' }));
   }, [draft, wantsDraft]);
 
-  // An author follow-up clears the server's cached draft, so a draft we hold from
-  // before it is out of date. Text the admin has edited stays; the rest is replaced.
   const lastFollowUpAt = ticket.responses.filter((response) => response.from === 'author').at(-1)?.createdAt;
   const draftIsStale = Boolean(draft && lastFollowUpAt && new Date(draft.generatedAt) < new Date(lastFollowUpAt));
   useEffect(() => {
@@ -147,12 +123,9 @@ export function useReplyComposer(ticket: AdminTicket) {
     text: composer.text,
     setText,
     usedAiDraft: composer.origin === 'ai',
-    /** True when the admin has changed the AI text before sending. */
     editedDraft: composer.origin === 'ai' && draft !== null && composer.text !== draft.text,
     draft,
-    /** Backend checks on the draft; only relevant while the text came from it. */
     draftWarnings: composer.origin === 'ai' ? draft?.warnings ?? [] : [],
-    /** `[confirm: …]` placeholders still present in the composer text. */
     placeholders: findPlaceholders(composer.text),
     notice,
     canInsertDraft: draft !== null && composer.origin !== 'ai',

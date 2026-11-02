@@ -74,11 +74,6 @@ function TicketHeading({ ticket }: { ticket: AdminTicket }) {
   );
 }
 
-/**
- * Admin ticket workspace. The ticket polls (POLL_ADMIN_MS) so new author
- * activity and colleagues' changes appear live. The composer keeps its own
- * local state, so a refetch never touches unsent text.
- */
 export function AdminTicketDetailPage() {
   const { ticketId = '' } = useParams();
   const location = useLocation();
@@ -128,11 +123,9 @@ export function AdminTicketDetailPage() {
           <TicketHeading ticket={ticket} />
           <RequesterContext ticket={ticket} />
           <TicketTimeline ticket={ticket} />
-          {/* Keyed by ticket so switching tickets starts a fresh composer. */}
           <ReplyComposer key={ticket.id} ticket={ticket} />
         </div>
         <aside className="space-y-4 lg:sticky lg:top-20 lg:self-start" aria-label="Ticket management">
-          {/* Keyed by ticket so unsaved edits never carry over to another ticket. */}
           <ManagementPanel key={ticket.id} ticket={ticket} />
           <InternalNoteForm ticketId={ticket.id} />
         </aside>

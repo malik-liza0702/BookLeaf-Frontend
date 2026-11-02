@@ -29,13 +29,11 @@ type LoginValues = z.infer<typeof loginSchema>;
 
 const ROLE_LABELS: Record<Role, string> = { author: 'Author', admin: 'Admin' };
 
-/** Seeded accounts, shown so reviewers can switch roles quickly. */
 const DEMO_ACCOUNTS: { label: string; hint: string; role: Role; email: string; password: string }[] = [
   { label: 'Author', hint: 'Priya Sharma', role: 'author', email: 'priya.sharma@email.com', password: 'Author@123' },
   { label: 'Admin', hint: 'Ops team', role: 'admin', email: 'admin@bookleaf.com', password: 'Admin@123' },
 ];
 
-/** Only honour a "return to" path that belongs to the signed-in role's area. */
 function redirectTarget(user: User, from: unknown): string {
   const area = user.role === 'admin' ? '/admin' : '/author';
   if (typeof from === 'string' && from.startsWith(area)) return from;

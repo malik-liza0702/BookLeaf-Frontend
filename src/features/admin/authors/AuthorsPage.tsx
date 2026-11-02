@@ -30,7 +30,6 @@ function AuthorsHeader() {
   );
 }
 
-/** A labelled figure on narrow screens, a plain table cell once the header row shows. */
 function Metric({ label, children, className }: { label: string; children: ReactNode; className?: string }) {
   return (
     <div className="min-w-0 xl:text-right">
@@ -48,7 +47,6 @@ function AuthorRow({ author }: { author: AuthorSummary }) {
     <li>
       <Link
         to={`/admin/authors/${encodeURIComponent(author.authorId)}`}
-        // Remember the searched list URL so "Back to authors" restores it.
         state={{ from: location.pathname + location.search }}
         className={cn('block space-y-3 px-4 py-3 hover:bg-slate-50 focus:bg-slate-50 focus:outline-none xl:space-y-0', GRID)}
       >
@@ -92,8 +90,6 @@ export function AuthorsPage() {
   const pageParam = Number(params.get('page'));
   const requestedPage = Number.isInteger(pageParam) && pageParam > 0 ? pageParam : 1;
 
-  // The search box is local state so typing stays snappy; the URL (and the
-  // API request) only updates once the admin pauses.
   const [search, setSearch] = useState(q);
   const lastPushed = useRef(q);
   useEffect(() => {

@@ -79,12 +79,10 @@ export function AuthorTicketDetailPage() {
   const [justCreated] = useState(createdInState);
   const { data: ticket, isPending, isError, error, refetch, isRefetching } = useMyTicket(ticketId);
 
-  // History state survives reloads and Back; clear it so the confirmation only plays once.
   useEffect(() => {
     if (createdInState) navigate(location.pathname, { replace: true, state: null });
   }, [createdInState, location.pathname, navigate]);
 
-  // Viewing the ticket clears its "New reply" indicator in the list.
   const supportReplies = ticket ? supportReplyCount(ticket) : 0;
   useEffect(() => {
     if (ticket) markResponsesSeen(ticket.id, supportReplies);
@@ -117,7 +115,6 @@ export function AuthorTicketDetailPage() {
     );
   }
 
-  // A reply or status change makes the confirmation stale; StatusBanner takes over.
   const showSubmitted = justCreated && isUnresolved(ticket.status) && supportReplies === 0;
 
   return (

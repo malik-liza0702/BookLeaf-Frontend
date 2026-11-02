@@ -13,18 +13,12 @@ import { isUnresolved } from '@/lib/tickets';
 const MAX_REPLY_LENGTH = 5000;
 const FIELD_ID = 'author-reply';
 
-/**
- * Follow-up box under the conversation. Resolved and Closed are final, so it goes
- * away with them, except that unsent text stays on screen (read-only): polling can
- * pick up a status change while the author is still typing.
- */
 export function TicketReplyForm({ ticketId, status }: { ticketId: string; status: TicketStatus }) {
   const toast = useToast();
   const reply = useSendAuthorReply(ticketId);
   const [text, setText] = useState('');
 
   const trimmed = text.trim();
-  // 409: resolved in the meantime, or the thread is full. Retrying won't help.
   const conflict = isApiError(reply.error) && reply.error.code === 'CONFLICT';
   const closed = !isUnresolved(status) || conflict;
   const canSubmit = !closed && trimmed.length > 0 && text.length <= MAX_REPLY_LENGTH && !reply.isPending;

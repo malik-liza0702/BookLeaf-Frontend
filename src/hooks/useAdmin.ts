@@ -9,7 +9,7 @@ export function useAdminUsers() {
   return useQuery({
     queryKey: queryKeys.admin.users,
     queryFn: adminApi.users,
-    staleTime: 5 * 60_000, // the admin roster rarely changes
+    staleTime: 5 * 60_000,
   });
 }
 
@@ -25,7 +25,6 @@ export function useAdminAuthors(params: AuthorListParams) {
   return useQuery({
     queryKey: queryKeys.admin.authors(params),
     queryFn: () => adminApi.authors(params),
-    // Keep the current page on screen while a new search/page loads.
     placeholderData: keepPreviousData,
   });
 }

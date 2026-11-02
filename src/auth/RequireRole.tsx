@@ -4,10 +4,6 @@ import { FullPageSpinner } from '@/components/ui/Spinner';
 import { useAuth } from './AuthContext';
 import { homePathFor } from './homePath';
 
-/**
- * Route guard. Anonymous users go to /login (remembering where they were
- * heading); a signed-in user of the wrong role is sent to their own home.
- */
 export function RequireRole({ role }: { role: Role }) {
   const { status, user } = useAuth();
   const location = useLocation();
@@ -18,7 +14,6 @@ export function RequireRole({ role }: { role: Role }) {
   return <Outlet />;
 }
 
-/** Sends "/" and unknown roots to the right place. */
 export function HomeRedirect() {
   const { status, user } = useAuth();
   if (status === 'loading') return <FullPageSpinner label="Restoring your session…" />;

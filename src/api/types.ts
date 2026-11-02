@@ -1,5 +1,3 @@
-// Types mirroring API_CONTRACT.md (v1). Keep this file in sync with the contract.
-
 export const ROLES = ['author', 'admin'] as const;
 export type Role = (typeof ROLES)[number];
 
@@ -36,8 +34,6 @@ export const ERROR_CODES = [
 ] as const;
 export type ErrorCode = (typeof ERROR_CODES)[number];
 
-// ---------- Envelopes ----------
-
 export interface ApiErrorDetail {
   field: string;
   message: string;
@@ -66,18 +62,14 @@ export interface ListResponse<T> {
   meta: PageMeta;
 }
 
-// ---------- Notifications ----------
-
 export type NotificationType = 'reply' | 'status_change';
 
-/** Named to avoid the browser's global `Notification`. */
 export interface AppNotification {
   id: string;
   type: NotificationType;
   ticketId: string;
   ticketNumber: string;
   subject: string;
-  /** The new status if this event changed it, otherwise null. */
   status: TicketStatus | null;
   message: string;
   read: boolean;
@@ -88,8 +80,6 @@ export interface NotificationList {
   data: AppNotification[];
   meta: PageMeta & { unreadCount: number };
 }
-
-// ---------- Auth ----------
 
 export interface User {
   id: string;
@@ -109,11 +99,8 @@ export interface LoginResponse {
   user: User;
 }
 
-// ---------- Books ----------
-
 export interface Book {
   id: string;
-  /** Business key, e.g. "BK001". Tickets and /books/:bookId use this. */
   bookId: string;
   title: string;
   isbn: string;
@@ -133,8 +120,6 @@ export interface Book {
   isInProduction: boolean;
 }
 
-// ---------- Tickets ----------
-
 export interface Attachment {
   name: string;
   size: number;
@@ -150,17 +135,14 @@ export interface AuthorResponse {
   createdAt: string;
 }
 
-/** What an author sees. Never contains AI fields or internal notes. */
 export interface AuthorTicket {
   id: string;
   ticketNumber: string;
   subject: string;
   description: string;
   status: TicketStatus;
-  /** Book.bookId (e.g. "BK001"), or null for general/account-level queries. */
   bookId: string | null;
   bookTitle: string | null;
-  /** null on tickets raised before the field existed. */
   queryType: QueryType | null;
   attachments: Attachment[];
   responses: AuthorResponse[];
@@ -185,7 +167,6 @@ export interface AiDraft {
   generatedAt: string;
   model: string;
   fallback: boolean;
-  /** Automated checks on the draft (unverified amounts/dates, unfilled placeholders). */
   warnings: string[];
 }
 
@@ -210,13 +191,11 @@ export interface AdminTicket extends Omit<AuthorTicket, 'responses'> {
   assignedTo: AssigneeRef | null;
   internalNotes: InternalNote[];
   aiDraft: AiDraft | null;
-  /** The author's follow-up is waiting for an answer. */
   needsReply: boolean;
   responses: AdminResponse[];
 }
 
 export interface CreateTicketRequest {
-  /** Book.bookId (e.g. "BK001"), or null for general/account-level queries. */
   bookId?: string | null;
   queryType: QueryType;
   subject: string;
@@ -230,11 +209,8 @@ export interface CreateReplyRequest {
 
 export interface UpdateTicketRequest {
   status?: TicketStatus;
-  /** null resets to the AI value (clears categoryOverridden). */
   category?: TicketCategory | null;
-  /** null resets to the AI value (clears priorityOverridden). */
   priority?: TicketPriority | null;
-  /** userId, null to unassign, or "me" */
   assignedTo?: string | null;
 }
 
@@ -244,7 +220,6 @@ export interface CreateResponseRequest {
   status?: TicketStatus;
 }
 
-/** The draft text to rework and what the admin wants changed. */
 export interface DraftRevision {
   previousDraft: string;
   suggestions: string;
@@ -257,12 +232,10 @@ export interface CreateNoteRequest {
 export type TicketSort = 'urgency' | 'newest' | 'oldest';
 
 export interface AdminTicketFilters {
-  /** Author.authorId (e.g. "AUTH001"): only this author's tickets. */
   authorId?: string;
   status?: TicketStatus;
   category?: TicketCategory;
   priority?: TicketPriority;
-  /** "me" | "unassigned" | userId */
   assignedTo?: string;
   from?: string;
   to?: string;
@@ -270,11 +243,8 @@ export interface AdminTicketFilters {
   sort?: TicketSort;
   page?: number;
   limit?: number;
-  /** ISO timestamp: only tickets changed since then (empty array if none). */
   updatedSince?: string;
 }
-
-// ---------- Admin helpers ----------
 
 export interface AdminUser {
   id: string;
@@ -301,13 +271,11 @@ export interface AuthorTotals {
   royaltyPaid: number;
   royaltyPending: number;
   tickets: number;
-  /** Open or In Progress. */
   unresolvedTickets: number;
 }
 
 export interface AuthorSummary {
   id: string;
-  /** Business key, e.g. "AUTH001". /admin/authors/:authorId uses this. */
   authorId: string;
   name: string;
   email: string;

@@ -40,8 +40,6 @@ const raiseQueryLink = (
   </Link>
 );
 
-// ---------------- Summary tiles ----------------
-
 interface TileProps {
   label: string;
   icon: ReactNode;
@@ -133,8 +131,6 @@ function SummaryTiles({
     </div>
   );
 }
-
-// ---------------- Panels ----------------
 
 function Panel({
   icon,
@@ -250,7 +246,6 @@ function BooksPanel({ query }: { query: ReturnType<typeof useBooks> }) {
   );
 }
 
-/** Tickets with unread replies first, then the most recently updated. */
 function sortForDashboard(tickets: AuthorTicket[]): AuthorTicket[] {
   const unseen = (t: AuthorTicket) => (hasUnseenReplies(t.id, supportReplyCount(t)) ? 1 : 0);
   return [...tickets].sort(
@@ -316,8 +311,6 @@ function QueriesPanel({ query }: { query: ReturnType<typeof useMyTickets> }) {
     </Panel>
   );
 }
-
-// ---------------- Page ----------------
 
 export function AuthorDashboardPage() {
   const { user } = useAuth();

@@ -16,15 +16,9 @@ interface ClassificationControlProps<T extends string> {
   overridden: boolean;
   disabled?: boolean;
   onChange: (value: T) => void;
-  /** Revert to the AI value and clear the override (saved as a PATCH with null). */
   onReset: () => void;
 }
 
-/**
- * A category/priority select that keeps the AI's suggestion visible next to
- * the effective value. The "Overridden" badge additionally requires the value
- * to differ from the AI's, so an admin re-picking the AI value reads correctly.
- */
 export function ClassificationControl<T extends string>({
   id,
   label,

@@ -17,7 +17,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const logout = useCallback(() => {
     tokenStorage.clear();
-    // Drop every cached query so the next user never sees the previous one's data.
     queryClient.clear();
     setUser(null);
     setStatus('anonymous');
@@ -26,7 +25,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = useCallback(
     async (email: string, password: string, role: Role) => {
       const { token, user: loggedIn } = await authApi.login({ email, password });
-      // Don't keep a session for an account that doesn't match the chosen role.
       if (loggedIn.role !== role) {
         throw new Error(`This account can't sign in as ${role === 'admin' ? 'an admin' : 'an author'}.`);
       }
@@ -39,9 +37,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     [queryClient],
   );
 
-  // Any 401 from an authenticated request (expired/invalid JWT) logs out.
-  // Route guards then redirect to /login. A ref avoids toasting more than once
-  // when several polling queries fail with 401 at the same moment.
   const expiredNotified = useRef(false);
   useEffect(() => {
     setUnauthenticatedHandler(() => {
@@ -55,7 +50,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => setUnauthenticatedHandler(null);
   }, [logout, toast]);
 
-  // On first load with a stored token, confirm it is still valid.
   useEffect(() => {
     if (status !== 'loading') return;
     let cancelled = false;
@@ -68,8 +62,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       })
       .catch((error: unknown) => {
         if (cancelled) return;
-        // 401 is handled by the global handler; anything else (backend down)
-        // also leaves us signed out so the login page can show the problem.
         if (!isApiError(error) || error.status !== 401) tokenStorage.clear();
         setUser(null);
         setStatus('anonymous');

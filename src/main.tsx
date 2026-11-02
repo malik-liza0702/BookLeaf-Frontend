@@ -12,7 +12,6 @@ const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       staleTime: 2_000,
-      // Retry transient failures once; 4xx responses won't change on retry.
       retry: (failureCount, error) => {
         if (isApiError(error) && error.status >= 400 && error.status < 500) return false;
         return failureCount < 1;

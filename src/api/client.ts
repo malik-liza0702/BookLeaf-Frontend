@@ -3,13 +3,8 @@ import type { ApiErrorBody, ApiErrorDetail, ErrorCode } from './types';
 
 const BASE_URL = (import.meta.env.VITE_API_BASE_URL ?? '/api/v1').replace(/\/$/, '');
 
-/** Client-side error codes that never come from the backend. */
 type ClientErrorCode = 'NETWORK_ERROR' | 'BAD_RESPONSE';
 
-/**
- * Every failed request is turned into an ApiError, so UI code only ever has to
- * handle one error type. `code` follows the contract's error codes.
- */
 export class ApiError extends Error {
   readonly status: number;
   readonly code: ErrorCode | ClientErrorCode;
@@ -33,15 +28,12 @@ export function isApiError(error: unknown): error is ApiError {
   return error instanceof ApiError;
 }
 
-/** Human readable message for any thrown value. */
 export function errorMessage(error: unknown, fallback = 'Something went wrong.'): string {
   if (isApiError(error)) return error.message || fallback;
   if (error instanceof Error) return error.message || fallback;
   return fallback;
 }
 
-// The auth layer registers a handler so that any 401 on an authenticated
-// request logs the user out, without the client importing React code.
 let onUnauthenticated: (() => void) | null = null;
 export function setUnauthenticatedHandler(handler: (() => void) | null) {
   onUnauthenticated = handler;
@@ -53,7 +45,6 @@ interface RequestOptions {
   method?: 'GET' | 'POST' | 'PATCH' | 'PUT' | 'DELETE';
   body?: unknown;
   query?: Query;
-  /** Skip the bearer token and the global 401 handler (used by login). */
   anonymous?: boolean;
   signal?: AbortSignal;
 }
@@ -100,7 +91,6 @@ export async function apiRequest<T>(path: string, options: RequestOptions = {}):
     throw new ApiError(0, 'NETWORK_ERROR', 'Cannot reach the server. Check your connection and try again.');
   }
 
-  // 204 or empty body
   const text = await response.text();
   let json: unknown = null;
   if (text) {

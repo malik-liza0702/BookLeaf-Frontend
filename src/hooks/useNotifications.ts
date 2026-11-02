@@ -24,7 +24,6 @@ export function useMarkNotificationsRead() {
   });
 }
 
-/** Viewing a ticket clears its notifications, including any that arrive while it is open. */
 export function useMarkTicketNotificationsRead(ticketId: string) {
   const { data } = useNotifications();
   const { mutate } = useMarkNotificationsRead();
@@ -35,10 +34,6 @@ export function useMarkTicketNotificationsRead(ticketId: string) {
   }, [newestUnreadId, ticketId, mutate]);
 }
 
-/**
- * Toasts notifications that arrive during this session. Anything already there
- * on first load is not toasted, and neither is the ticket on screen.
- */
 export function useNotificationToasts(enabled: boolean) {
   const toast = useToast();
   const { data } = useNotifications(enabled);

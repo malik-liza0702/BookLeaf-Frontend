@@ -124,7 +124,6 @@ function BookCard({ bookId, fallbackTitle }: { bookId: string; fallbackTitle: st
   );
 }
 
-/** Who is asking and about what: the facts an admin checks before replying. */
 export function RequesterContext({ ticket }: { ticket: AdminTicket }) {
   return (
     <div className="grid gap-4 md:grid-cols-2">

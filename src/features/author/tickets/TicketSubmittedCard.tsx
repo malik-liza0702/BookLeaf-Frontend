@@ -1,7 +1,5 @@
 import { useEffect, useRef } from 'react';
 
-// Animations are motion-safe only: every element's resting style is its final
-// state, so reduced-motion users get the finished tick straight away.
 function AnimatedTick() {
   return (
     <span className="relative block h-16 w-16" aria-hidden>
@@ -30,8 +28,6 @@ function AnimatedTick() {
 export function TicketSubmittedCard({ ticketNumber }: { ticketNumber: string }) {
   const ref = useRef<HTMLDivElement>(null);
 
-  // The form can be scrolled well down on submit, and nothing resets scroll on
-  // navigation. Focus also makes screen readers announce the confirmation.
   useEffect(() => {
     window.scrollTo(0, 0);
     ref.current?.focus({ preventScroll: true });

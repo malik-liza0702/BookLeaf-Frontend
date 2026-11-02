@@ -1,10 +1,5 @@
 import type { AdminTicketFilters, AuthorListParams } from '@/api/types';
 
-/**
- * Central query-key factory. Keys are hierarchical so a mutation can
- * invalidate a whole branch, e.g. `queryKeys.tickets.all` refreshes every
- * ticket list and detail at once.
- */
 export const queryKeys = {
   me: ['auth', 'me'] as const,
   books: {

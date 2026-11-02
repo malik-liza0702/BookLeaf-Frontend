@@ -1,11 +1,8 @@
-/** @type {import('tailwindcss').Config} */
 export default {
   content: ['./index.html', './src/**/*.{ts,tsx}'],
   theme: {
     extend: {
       colors: {
-        // 500 is the brand colour, rgb(241, 104, 118). Use 700 for text on
-        // white or brand-50 backgrounds; 500 is too light for body copy.
         brand: {
           50: '#fef2f3',
           100: '#fde3e6',
@@ -25,7 +22,6 @@ export default {
           '60%': { transform: 'scale(1.12)' },
           '100%': { transform: 'scale(1)' },
         },
-        // Opacity hides the dot a round linecap leaves on a zero-length dash.
         'tick-draw': {
           '0%': { strokeDashoffset: '1', opacity: '0' },
           '1%': { opacity: '1' },
